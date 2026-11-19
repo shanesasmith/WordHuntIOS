@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Word Hunt</title>
+<meta name="description" content="Swipe letters, find words, beat your friends. 80 seconds on the clock.">
+<meta property="og:title" content="Word Hunt — you've been challenged!">
+<meta property="og:description" content="Swipe letters, find words, beat your friends. 80 seconds on the clock.">
+<meta property="og:image" content="icon-512.png">
+<meta name="theme-color" content="#0e1630">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Word Hunt">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- HOME -->
+<section id="home" class="screen">
+  <div class="scroll">
+    <header class="logo" aria-label="Word Hunt">
+      <div class="logo-row"><span>W</span><span>O</span><span>R</span><span>D</span></div>
+      <div class="logo-row"><span>H</span><span>U</span><span>N</span><span>T</span></div>
+    </header>
+
+    <label class="field">
+      <span>Your name</span>
+      <input id="nameInput" type="text" maxlength="16" placeholder="Enter your name" autocomplete="nickname" autocapitalize="words" enterkeyhint="done">
+    </label>
+
+    <button id="newGameBtn" class="btn primary big">New Game</button>
+    <button id="howBtn" class="btn ghost">How to play</button>
+
+    <h2 class="section-title" id="recentTitle" hidden>Recent games</h2>
+    <ul id="recentList" class="card-list"></ul>
+
+    <button id="soundBtn" class="link-btn">Sound: On</button>
+  </div>
+</section>
+
+<!-- INVITE (opened a friend's link) -->
+<section id="invite" class="screen" hidden>
+  <div class="scroll center">
+    <div class="avatar big" id="inviteAvatar">?</div>
+    <h1 id="inviteTitle">You've been challenged!</h1>
+    <p class="muted" id="inviteSub"></p>
+    <ul id="inviteBoard" class="leaderboard"></ul>
+    <label class="field" id="inviteNameField" hidden>
+      <span>Your name</span>
+      <input id="inviteNameInput" type="text" maxlength="16" placeholder="Enter your name" autocomplete="nickname" autocapitalize="words" enterkeyhint="done">
+    </label>
+    <button id="acceptBtn" class="btn primary big">Play</button>
+    <button class="btn ghost" data-go="home">Not now</button>
+  </div>
+</section>
+
+<!-- GAME -->
+<section id="game" class="screen" hidden>
+  <div class="hud">
+    <div class="hud-box"><small>WORDS</small><b id="hudWords">0</b></div>
+    <div class="hud-box score"><small>SCORE</small><b id="hudScore">0</b></div>
+    <div class="hud-box"><small>TIME</small><b id="hudTime">1:20</b></div>
+  </div>
+  <div class="word-area">
+    <div id="wordPill" class="word-pill"><span id="wordText"></span><em id="wordPts"></em></div>
+  </div>
+  <div class="board-wrap">
+    <div id="board" class="board">
+      <svg id="trail" class="trail" viewBox="0 0 400 400" preserveAspectRatio="none"><polyline points=""/></svg>
+    </div>
+  </div>
+  <p class="hint">Drag across letters to make words · 3+ letters</p>
+  <div id="countdown" class="overlay" hidden><div id="countNum">3</div></div>
+  <div id="timesUp" class="overlay" hidden><div class="timesup">Time's up!</div></div>
+</section>
+
+<!-- RESULTS -->
+<section id="results" class="screen" hidden>
+  <div class="scroll">
+    <div class="results-head">
+      <div id="miniBoard" class="mini-board"></div>
+      <div>
+        <h1 id="resTitle">Nice hunt!</h1>
+        <p class="muted" id="resSub"></p>
+      </div>
+    </div>
+
+    <ul id="resBoard" class="leaderboard"></ul>
+
+    <button id="shareBtn" class="btn primary big">Challenge friends</button>
+    <p class="muted small center" id="shareNote">Send the link by iMessage — everyone plays the same board.</p>
+
+    <div id="wordTabs" class="chips"></div>
+    <ul id="wordList" class="word-list"></ul>
+
+    <div class="row">
+      <button id="againBtn" class="btn secondary">New Game</button>
+      <button class="btn secondary" data-go="home">Home</button>
+    </div>
+  </div>
+</section>
+
+<!-- SHEETS -->
+<div id="sheetBackdrop" class="backdrop" hidden></div>
+<div id="howSheet" class="sheet" hidden>
+  <div class="grabber"></div>
+  <h2>How to play</h2>
+  <ol class="how">
+    <li><b>Swipe</b> across touching letters (diagonals count) to spell words of 3+ letters.</li>
+    <li>The word turns <span class="g">green</span> when it's a new valid word and <span class="y">yellow</span> if you already found it.</li>
+    <li>Longer words score much more: 3 = 100, 4 = 400, 5 = 800, 6 = 1,400, 7 = 1,800, 8+ = 2,200 and up.</li>
+    <li>You have <b>80 seconds</b>. Then tap <b>Challenge friends</b> to send the same board to anyone. Their scores come back when they send the link back to you.</li>
+  </ol>
+  <button class="btn primary" data-close>Got it</button>
+</div>
+<div id="linkSheet" class="sheet" hidden>
+  <div class="grabber"></div>
+  <h2>Share this link</h2>
+  <p class="muted">Copy it and send it to your friends.</p>
+  <textarea id="linkText" readonly rows="4"></textarea>
+  <button id="copyBtn" class="btn primary">Copy link</button>
+  <button class="btn ghost" data-close>Done</button>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+<div id="loading" class="overlay dim" hidden><div class="spinner"></div></div>
+
+<script src="app.js"></script>
+</body>
+</html>
